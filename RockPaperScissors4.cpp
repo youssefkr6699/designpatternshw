@@ -64,32 +64,76 @@ public:
         return matrix[index2][index1]; 
     }
 };
-class Game {
+
+class ComputerStrategy {
 public:
+    virtual int getChoice() = 0;
+    virtual ~ComputerStrategy() {}
+};
+
+
+class RandomStrategy : public ComputerStrategy {
+public:
+    int getChoice() override {
+        return (rand() % 3) + 1;
+    }
+};
+
+
+class RockHeavyStrategy : public ComputerStrategy {
+public:
+    int getChoice() override {
+        
+        if ((rand() % 10) < 7) {
+            return 1; 
+        }
+        return (rand() % 2) + 2; 
+    }
+};
+class Game {
+protected: 
     string name;
     int isGameOver = 0;
     int countP = 0;
     int countC = 0;
     ScoreAdapter adapter;
+    ComputerStrategy* aiStrategy;
 
+public:
+    Game(ComputerStrategy* strategy) : aiStrategy(strategy) {}
+    virtual ~Game() {}
+
+    
     void run() {
-       
-        srand(time(0)); 
+        initializeGame();
+        playRounds();
+        displayFinalResults();
+    }
 
+protected:
+    
+    virtual void initializeGame() {
+        srand(time(0));
+        isGameOver = 0;
+        countP = 0;
+        countC = 0;
+    }
+
+    
+    virtual void playRounds() {
         while (isGameOver != 3) {
             int choiceNum;
             cout << "\nChoose your move 1.rock 2.paper 3.scissors: ";
             cin >> choiceNum;
 
             Move* playerMove = MoveFactory::createMove(choiceNum);
-            if (playerMove != nullptr) {
-                cout << "Your move is: " << playerMove->getName() << endl;
-            } else {
+            if (playerMove == nullptr) {
                 cout << "Invalid choice, trying again." << endl;
                 continue;
             }
+            cout << "Your move is: " << playerMove->getName() << endl;
 
-            int choiceC = (rand() % 3) + 1; 
+            int choiceC = aiStrategy->getChoice(); 
             Move* computerMove = MoveFactory::createMove(choiceC);
             if (computerMove != nullptr) {
                 cout << "Computer's move: " << computerMove->getName() << endl;
@@ -109,14 +153,14 @@ public:
                 countC++;
             }
 
-           
             delete playerMove;
             delete computerMove;
 
             isGameOver++;
         }
+    }
 
-        
+    virtual void displayFinalResults() {
         cout << "\n--- Final Match Results ---" << endl;
         if (countP > countC) {
             cout << "You won the entire game! (" << countP << "-" << countC << ")" << endl;
@@ -130,19 +174,34 @@ public:
 
 class GameFacade {
 private:
-    Game gameEngine;
+    ComputerStrategy* strategy;
+    Game* gameEngine;
 public:
     void playMatch() {
         cout << "=========================================" << endl;
         cout << "  Welcome to Rock, Paper, Scissors Pro!  " << endl;
         cout << "=========================================" << endl;
+        cout << "Select AI Difficulty: 1. Normal (Random)  2. Hard (Rock-Heavy): ";
+        int aiChoice;
+        cin >> aiChoice;
+
+        if (aiChoice == 2) {
+            strategy = new RockHeavyStrategy();
+        } else {
+            strategy = new RandomStrategy();
+        }
+
         
-        
-        gameEngine.run(); 
+        gameEngine = new Game(strategy);
+        gameEngine->run(); 
         
         cout << "=========================================" << endl;
         cout << "        Thank you for playing!          " << endl;
         cout << "=========================================" << endl;
+
+       
+        delete gameEngine;
+        delete strategy;
     }
 };
 
