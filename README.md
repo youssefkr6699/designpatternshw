@@ -46,21 +46,26 @@ classDiagram
     
     ScoreAdapter ..> Move : extracts IDs from
 ```
-## 3. Structural Pattern: Facade
+## 3. Behavioral Pattern: Strategy
 ```mermaid
 classDiagram
-    class GameFacade {
-        -strategy: ComputerStrategy*
-        -gameEngine: Game*
-        +playMatch() void
-    }
-    class Game {
-        +run() void
-    }
     class ComputerStrategy {
         <<interface>>
+        +getChoice() int*
+    }
+    class RandomStrategy {
+        +getChoice() int
+    }
+    class RockHeavyStrategy {
+        +getChoice() int
+    }
+    class Game {
+        #aiStrategy: ComputerStrategy*
+        +Game(strategy: ComputerStrategy*)
+        +run() void
     }
     
-    GameFacade --> Game : creates & runs
-    GameFacade --> ComputerStrategy : configures AI
+    ComputerStrategy <|-- RandomStrategy : implements
+    ComputerStrategy <|-- RockHeavyStrategy : implements
+    Game o-- ComputerStrategy : has-a
 ```
