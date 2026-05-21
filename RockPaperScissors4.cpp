@@ -5,6 +5,46 @@
 using namespace std;
 
 
+class Move {
+public:
+    virtual string getName() = 0; 
+    virtual int getId() = 0;    
+    virtual ~Move() {} 
+};
+
+
+class Rock : public Move {
+public:
+    string getName() override { return "rock"; }
+    int getId() override { return 1; } 
+};
+
+class Paper : public Move {
+public:
+    string getName() override { return "paper"; }
+    int getId() override { return 2; }
+};
+
+
+class Scissors : public Move {
+public:
+    string getName() override { return "scissors"; }
+    int getId() override { return 3; } 
+};
+
+class MoveFactory {
+public:
+   
+    static Move* createMove(int choice) {
+        switch (choice) {
+            case 1: return new Rock();
+            case 2: return new Paper();
+            case 3: return new Scissors();
+            default: return nullptr;
+        }
+    }
+};
+
 class Game{
     public:
         string name;
@@ -14,53 +54,27 @@ class Game{
 
         void run(){
             while(isGameOver != 3){
-                int choiceP;
+               
+                
                 int choiceNum;
-                cout << "\n\n";
-                cout << "chose your move 1.rock 2.paper 3.scissors: ";
+                cout << "choose your move 1.rock 2.paper 3.scissors: ";
                 cin >> choiceNum;
-                if(choiceNum == 1){
-                    choiceP = 0;
-                    cout << "Your move is: rock" << endl;
-                }
-                else if(choiceNum == 2){
-                    choiceP = 1;
-                    cout << "Your move is: paper" << endl;
-                }
-                else{
-                    choiceP = 2;
-                    cout << "Your move is: scissors" << endl;
-                }
-
-                int choiceC = rand() % 3;
-                switch (choiceC){
-                    case 0:
-                        cout << "Computer's move: rock" << endl;
-                        break;
-                    case 1:
-                        cout << "Computer's move: paper" << endl;
-                        break;
-                    case 2:
-                        cout << "Computer's move: scissors" << endl;
-                        break;
-
-                }
 
 
-
-                if((choiceC == 0 && choiceP == 0) || (choiceC == 1 && choiceP == 1) || (choiceC == 2 && choiceP == 2)){
-                    cout << "Draw" << endl;
-                }
-                else if((choiceC == 0 && choiceP == 1) || (choiceC == 1 && choiceP == 2) || (choiceC == 2 && choiceP == 0)){
-                    cout << "Person won" << endl;
-                    countP++;
-                }
-                else{
-                    cout << "Computer won" << endl;
-                    countC++;
+                Move* playerMove = MoveFactory::createMove(choiceNum);
+                if (playerMove != nullptr) {
+                    cout << "Your move is: " << playerMove->getName() << endl;
                 }
 
-                isGameOver++;
+                int choiceC = (rand() % 3) + 1; 
+                Move* computerMove = MoveFactory::createMove(choiceC);
+                if (computerMove != nullptr) {
+                    cout << "Computer's move: " << computerMove->getName() << endl;
+                }
+
+               
+                delete playerMove;
+                delete computerMove;
 
             }
             cout << "\n\n";
@@ -117,3 +131,4 @@ int main(){
 
     return 0;
 }
+
