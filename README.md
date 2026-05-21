@@ -46,3 +46,21 @@ classDiagram
     
     ScoreAdapter ..> Move : extracts IDs from
 ```
+## 3. Structural Pattern: Facade
+```mermaid
+classDiagram
+    class GameFacade {
+        -strategy: ComputerStrategy*
+        -gameEngine: Game*
+        +playMatch() void
+    }
+    class Game {
+        +run() void
+    }
+    class ComputerStrategy {
+        <<interface>>
+    }
+    
+    GameFacade --> Game : creates & runs
+    GameFacade --> ComputerStrategy : configures AI
+```
