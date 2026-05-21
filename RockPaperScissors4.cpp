@@ -44,91 +44,111 @@ public:
         }
     }
 };
+class ScoreAdapter {
+private:
+  
+    int matrix[3][3] = {
+        {0, 1, 2},
+        {2, 0, 1},
+        {1, 2, 0}
+    };
 
-class Game{
-    public:
-        string name;
-        int isGameOver = 0;
-        int countP = 0;
-        int countC = 0;
+public:
+    
+    int evaluateMatch(Move* p1, Move* p2) {
+       
+        int index1 = p1->getId() - 1;
+        int index2 = p2->getId() - 1;
+        
+       
+        return matrix[index2][index1]; 
+    }
+};
+class Game {
+public:
+    string name;
+    int isGameOver = 0;
+    int countP = 0;
+    int countC = 0;
+    ScoreAdapter adapter;
 
-        void run(){
-            while(isGameOver != 3){
-               
-                
-                int choiceNum;
-                cout << "choose your move 1.rock 2.paper 3.scissors: ";
-                cin >> choiceNum;
+    void run() {
+       
+        srand(time(0)); 
 
+        while (isGameOver != 3) {
+            int choiceNum;
+            cout << "\nChoose your move 1.rock 2.paper 3.scissors: ";
+            cin >> choiceNum;
 
-                Move* playerMove = MoveFactory::createMove(choiceNum);
-                if (playerMove != nullptr) {
-                    cout << "Your move is: " << playerMove->getName() << endl;
-                }
-
-                int choiceC = (rand() % 3) + 1; 
-                Move* computerMove = MoveFactory::createMove(choiceC);
-                if (computerMove != nullptr) {
-                    cout << "Computer's move: " << computerMove->getName() << endl;
-                }
-
-               
-                delete playerMove;
-                delete computerMove;
-
+            Move* playerMove = MoveFactory::createMove(choiceNum);
+            if (playerMove != nullptr) {
+                cout << "Your move is: " << playerMove->getName() << endl;
+            } else {
+                cout << "Invalid choice, trying again." << endl;
+                continue;
             }
-            cout << "\n\n";
-            if(countP > countC){
-                cout << "You won in this game" << endl;
+
+            int choiceC = (rand() % 3) + 1; 
+            Move* computerMove = MoveFactory::createMove(choiceC);
+            if (computerMove != nullptr) {
+                cout << "Computer's move: " << computerMove->getName() << endl;
             }
-            else if(countP < countC){
-                cout << "Computer won in this game" << endl;
+
+            int result = adapter.evaluateMatch(playerMove, computerMove);
+
+            if (result == 0) {
+                cout << "Round Result: Draw" << endl;
+            } 
+            else if (result == 1) {
+                cout << "Round Result: Person won" << endl;
+                countP++;
+            } 
+            else if (result == 2) {
+                cout << "Round Result: Computer won" << endl;
+                countC++;
             }
-            else{
-                cout << "Draw in this game";
-            }
+
+           
+            delete playerMove;
+            delete computerMove;
+
+            isGameOver++;
         }
 
+        
+        cout << "\n--- Final Match Results ---" << endl;
+        if (countP > countC) {
+            cout << "You won the entire game! (" << countP << "-" << countC << ")" << endl;
+        } else if (countP < countC) {
+            cout << "Computer won the entire game! (" << countC << "-" << countP << ")" << endl;
+        } else {
+            cout << "The entire game ended in a draw! (" << countP << "-" << countC << ")" << endl;
+        }
+    }
+};
 
-
-
-
-
-
-
+class GameFacade {
+private:
+    Game gameEngine;
+public:
+    void playMatch() {
+        cout << "=========================================" << endl;
+        cout << "  Welcome to Rock, Paper, Scissors Pro!  " << endl;
+        cout << "=========================================" << endl;
+        
+        
+        gameEngine.run(); 
+        
+        cout << "=========================================" << endl;
+        cout << "        Thank you for playing!          " << endl;
+        cout << "=========================================" << endl;
+    }
 };
 
 
-
-
-int main(){
-
-   int p1;
-   int p2;
-   int arr[3][3] = {
-   {0,1,2},
-   {2,0,1},
-   {1,2,0}};
-
-   cout<<"plyaer one 1 r 2 p 3 s"<<endl;
-   cin>>p1;
-   cout<<"plyaer two 1.r 2.p 2.s"<<endl;
-    cin>>p2;
-   int result = arr[p2-1][p1-1];
-    cout<<result;
-   switch(result)
-   {
-   case 1:
-    cout<<"player 1 won";
-    break;
-   case 2:
-     cout<<"player 2 won";
-     break;
-     case 0:
-     cout<<"draw";
-   }
-
-
+int main() {
+    GameFacade game;
+    game.playMatch(); 
     return 0;
 }
-
