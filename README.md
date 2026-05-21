@@ -69,3 +69,20 @@ classDiagram
     ComputerStrategy <|-- RockHeavyStrategy : implements
     Game o-- ComputerStrategy : has-a
 ```
+## 4. Behavioral Pattern: Template Method
+```mermaid
+classDiagram
+    class Game {
+        #name: string
+        #isGameOver: int
+        #countP: int
+        #countC: int
+        #adapter: ScoreAdapter
+        +run() void
+        #initializeGame() void*
+        #playRounds() void*
+        #displayFinalResults() void*
+    }
+    
+    note for Game "run() execution order:\n1. initializeGame()\n2. playRounds()\n3. displayFinalResults()"
+```
