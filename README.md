@@ -31,3 +31,18 @@ classDiagram
     Move <|-- Scissors : implements
     MoveFactory ..> Move : creates
 ```
+
+## 2. Structural Pattern: Adapter
+```mermaid
+classDiagram
+    class ScoreAdapter {
+        -matrix[3][3] int
+        +evaluateMatch(p1: Move*, p2: Move*) int
+    }
+    class Move {
+        <<interface>>
+        +getId() int*
+    }
+    
+    ScoreAdapter ..> Move : extracts IDs from
+```
